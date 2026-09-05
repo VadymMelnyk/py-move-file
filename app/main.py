@@ -6,6 +6,8 @@ def move_file(command: str) -> None:
     if len(parts) != 3 or parts[0] != "mv":
         raise ValueError
     _, old_file, new_file = parts
+    if new_file[-1] == "/":
+        new_file += old_file
     file_path = new_file.split("/")
     current_path = ""
     for i in range(len(file_path) - 1):
@@ -14,7 +16,7 @@ def move_file(command: str) -> None:
         except FileExistsError:
             continue
         finally:
-            current_path += f"{file_path[i]}/"
+            current_path = path.join(current_path, file_path[i])
     with (open(old_file, "r")) as old, (open(new_file, "w")) as new:
         new.write(old.read())
     remove(old_file)
