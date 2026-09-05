@@ -1,17 +1,20 @@
-from os import mkdir, remove
+from os import mkdir, remove, path
 
 
 def move_file(command: str) -> None:
-    com, old_file, new_file = command.split(" ")
-    path = new_file.split("/")
+    parts = command.split(" ")
+    if len(parts) != 3 or parts[0] != "mv":
+        raise ValueError
+    _, old_file, new_file = parts
+    file_path = new_file.split("/")
     current_path = ""
-    for i in range(len(path) - 1):
+    for i in range(len(file_path) - 1):
         try:
-            mkdir(f"{current_path}{path[i]}")
+            mkdir(path.join(current_path, file_path[i]))
         except FileExistsError:
             continue
         finally:
-            current_path += f"{path[i]}/"
+            current_path += f"{file_path[i]}/"
     with (open(old_file, "r")) as old, (open(new_file, "w")) as new:
         new.write(old.read())
     remove(old_file)
